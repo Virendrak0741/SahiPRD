@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SahiPRD — Nature-Inspired PRD Score Checker</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+</head>
+<body>
+
+  <!-- Top Sustainability & Expiry Tracking Banner -->
+  <aside class="sustainability-banner">
+    <div class="container banner-content">
+      <div class="banner-highlight">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+          <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+        </svg>
+        <span>Sustainability & Expiry-Aware Audit Mode</span>
+      </div>
+      <div>
+        Evaluating food waste reduction (₹57,000 Cr) & pharma expiry avoidance (₹48,000 Cr) using lead-time adjusted MILP.
+      </div>
+      <div>
+        <span class="banner-pill">Zero-Trust Audit Active</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Application Header -->
+  <header class="app-header">
+    <div class="container header-inner">
+      <a href="#" class="brand">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>
+            SahiPRD
+            <span class="brand-badge">Nature Inspired</span>
+          </h1>
+          <span class="brand-tagline">Forest Gray-Green & Sage · Expiry & Sustainability Evaluator</span>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <select class="preset-select" id="rubric-preset-select">
+          <option value="hackathon">Rubric: 24h Hackathon & Competition (Default)</option>
+          <option value="sustainability">Rubric: Sustainability & Cold-Chain Tech</option>
+          <option value="enterprise">Rubric: Enterprise B2B Supply Chain SaaS</option>
+          <option value="early">Rubric: Early Stage Prototype</option>
+        </select>
+
+        <button class="btn btn-outline" onclick="copyBadge()" title="Copy GitHub Markdown Badge">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+          </svg>
+          Badge
+        </button>
+
+        <button class="btn btn-outline" onclick="exportReportMarkdown()" title="Export Evaluation as Markdown">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          Export .MD
+        </button>
+
+        <button class="btn btn-outline" onclick="window.print()" title="Print or Save PDF">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+          </svg>
+          PDF
+        </button>
+
+        <button class="btn btn-icon" id="theme-toggle-btn" title="Toggle Nature Dark/Light Palette">
+          <svg id="theme-icon" width="18" height="18" viewBox="0 0 24 24" fill="none"></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Ingestion Deck / Hero Upload Area -->
+      <section class="hero-card">
+        <div class="dropzone-grid">
+          <!-- Dropzone -->
+          <div class="dropzone-area" id="dropzone">
+            <input type="file" id="file-input" accept=".md,.markdown,.txt" style="display: none;">
+            <div class="dropzone-icon">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+            </div>
+            <div>
+              <div class="dropzone-title">Upload your PRD file (.md, .markdown)</div>
+              <div class="dropzone-subtitle">Drag & drop here or click to browse from device</div>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="dropzone-divider">
+            <span>or select preset</span>
+          </div>
+
+          <!-- Preloaded Samples -->
+          <div class="sample-presets">
+            <div class="sample-title">Benchmark PRD Library</div>
+
+            <button class="sample-pill-btn active" data-sample="sahisupply" onclick="loadSample('sahisupply')">
+              <div class="sample-info">
+                <div class="sample-name">
+                  <span>🌿 SahiSupply PRD (v4)</span>
+                </div>
+                <div class="sample-desc">Expiry-aware distribution planning · India grocery/pharma</div>
+              </div>
+              <div class="sample-score-preview score-elite">96 / 100</div>
+            </button>
+
+            <button class="sample-pill-btn" data-sample="ecotrace" onclick="loadSample('ecotrace')">
+              <div class="sample-info">
+                <div class="sample-name">
+                  <span>🍃 EcoTrace Tracker (v1.2)</span>
+                </div>
+                <div class="sample-desc">IoT cold-chain telemetry · South India milk & fruits</div>
+              </div>
+              <div class="sample-score-preview score-mid">64 / 100</div>
+            </button>
+
+            <button class="sample-pill-btn" data-sample="omniloop" onclick="loadSample('omniloop')">
+              <div class="sample-info">
+                <div class="sample-name">
+                  <span>🍂 OmniLoop AI Social</span>
+                </div>
+                <div class="sample-desc">Vague buzzword MVP · Missing architecture & math</div>
+              </div>
+              <div class="sample-score-preview score-low">32 / 100</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- File Loaded Bar -->
+        <div class="file-loaded-bar">
+          <div class="file-meta">
+            <span class="file-name">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <span id="loaded-filename">sahisupply_v4.md</span>
+            </span>
+            <div class="file-tags">
+              <span class="file-tag" id="stat-words">2,840 words</span>
+              <span class="file-tag" id="stat-reading">~13 min read</span>
+              <span class="file-tag" id="stat-headings">10 sections</span>
+              <span class="file-tag" id="stat-tables">12 tables</span>
+              <span class="file-tag" id="stat-citations">9 citations</span>
+            </div>
+          </div>
+
+          <button class="btn btn-outline" id="editor-toggle-btn" style="padding: 5px 10px; font-size: 0.78rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 20h9"/>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            Edit / Paste Raw Markdown
+          </button>
+        </div>
+
+        <!-- Collapsible Editor Panel -->
+        <div class="editor-panel" id="editor-panel">
+          <textarea class="editor-textarea" id="editor-textarea" placeholder="Paste or modify markdown here..."></textarea>
+          <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+            <button class="btn btn-primary" id="re-evaluate-btn">Re-Evaluate Score</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Scoreboard Top Grid: Radial Gauge + Dimension Progress Cards -->
+      <section class="score-overview-grid">
+        <!-- Radial Gauge Card -->
+        <div class="gauge-card">
+          <div class="tier-badge tier-elite" id="tier-badge">A+ · Elite Tier (Top 1%)</div>
+          
+          <div class="gauge-wrapper">
+            <svg class="gauge-svg" viewBox="0 0 190 190">
+              <circle class="gauge-bg" cx="95" cy="95" r="75"></circle>
+              <circle class="gauge-progress" id="gauge-circle" cx="95" cy="95" r="75"></circle>
+            </svg>
+            <div class="gauge-center-text">
+              <span class="gauge-score" id="score-number">96</span>
+              <span class="gauge-denom">/ 100</span>
+            </div>
+          </div>
+
+          <div class="verdict-text" id="verdict-text">
+            Production & Competition Ready. Exceptional mathematical rigor, transparency, and operational empathy.
+          </div>
+
+          <div class="metric-quick-chips">
+            <span class="quick-chip" id="chip-dims">6/6 Dimensions Analyzed</span>
+            <span class="quick-chip" id="chip-deductions">4 Minor Gaps Found</span>
+            <span class="quick-chip">Bounded FEFO Invariant</span>
+            <span class="quick-chip">Zero-Trust Checker</span>
+          </div>
+        </div>
+
+        <!-- 6 Pillars Dimension Progress Cards -->
+        <div class="dimensions-summary-card">
+          <div class="card-header-row">
+            <div class="card-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+              Evaluation Dimensions
+            </div>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Standardized 100-Point Rubric</span>
+          </div>
+
+          <div class="dimensions-grid" id="dimensions-grid">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Multi-Tab Detailed Inspection -->
+      <section>
+        <div class="tabs-nav">
+          <button class="tab-btn active" data-tab="criteria">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+              <polyline points="10 9 9 9 8 9"/>
+            </svg>
+            Detailed Scorecard (24 Checks)
+          </button>
+
+          <button class="tab-btn" data-tab="deductions">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="15" y1="9" x2="9" y2="15"/>
+              <line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            Gaps & Deductions
+            <span class="tab-count-badge" id="deductions-count-badge">4</span>
+          </button>
+
+          <button class="tab-btn" data-tab="actions">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            Path to 100 (Action Plan)
+            <span class="tab-count-badge" id="actions-count-badge">4</span>
+          </button>
+
+          <button class="tab-btn" data-tab="preview">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            Document Inspector
+          </button>
+        </div>
+
+        <!-- Tab 1: 24 Sub-Check Criteria -->
+        <div class="tab-content-panel active" id="tab-criteria">
+          <div id="criteria-accordion-container">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+
+        <!-- Tab 2: Deductions -->
+        <div class="tab-content-panel" id="tab-deductions">
+          <div id="deductions-container">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+
+        <!-- Tab 3: Action Plan -->
+        <div class="tab-content-panel" id="tab-actions">
+          <div id="action-plan-container">
+            <!-- Rendered by app.js -->
+          </div>
+        </div>
+
+        <!-- Tab 4: Markdown Preview Inspector -->
+        <div class="tab-content-panel" id="tab-preview">
+          <div class="inspector-card">
+            <div id="markdown-preview-container">
+              <!-- Rendered by app.js -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Application Footer -->
+  <footer class="app-footer">
+    <div class="container footer-inner">
+      <div>
+        <strong>SahiPRD</strong> — Nature-Inspired Expiry & Sustainability PRD Audit Platform
+      </div>
+      <div>
+        Forest Gray-Green & Sage Architecture · Lead-Time Adjusted MILP Evaluation · DPDP Act 2023 Mindful
+      </div>
+    </div>
+  </footer>
+
+  <!-- Raw SahiSupply PRD Fallback Embedded for offline file:// loading -->
+  <script type="text/plain" id="raw-sahisupply-content">
+# SahiSupply — Product Requirements Document (v4)
+
+*Right Product. Right Place. Right Time.*
+**Explainable, expiry-aware distribution planning for Indian grocery, food and pharmacy networks**
+
+> **Status.** This is a plan for a 24-hour build. Every number in Sections 4–10 is a **design setting or a target**, not a measured result. The prototype runs on synthetic data we generate ourselves. Problem statistics come from the sources listed under **References**. User-research results (Section 2.4) are recorded only after they are collected.
+
+---
+
+## 0. At a Glance
+
+| | |
+|---|---|
+| **Problem** | Regional distributors decide each week which batch goes from which warehouse to which outlet, mostly in spreadsheets. Outlets run out while stock sits elsewhere, and medicines and food expire in the wrong place. India loses about **₹57,000 crore of fruit and vegetables a year** after harvest [1][2]. Some public facilities have **under half** of their essential medicines in stock [4]. |
+| **User** | The **distribution planner**, who must produce a defensible plan every week. |
+| **Solution** | Forecast → net need → **batch-level optimization** with shelf life checked at arrival → **independent checker** → **why / why-not explanations** → fair comparison against a spreadsheet-style baseline. |
+| **What's new** | Expiry handled *inside* the optimizer; a "why not that warehouse?" answer for every line; **₹ value of one more unit of stock, capacity or a fridge**; India-specific disruption scenarios; one engine for three industries via typed rule templates. |
+| **Proof we will show** | 0 rule violations across 100 random seeds; fill rate ≥ baseline + 5 percentage points in disruption scenarios; SUS usability ≥ 70; full demo in 3 minutes. |
+| **Feasibility** | 4 roles × 14 hours = 56 person-hours of P0 work, budgeted line by line (Section 9.1). Stretch work only starts after a hour-14 gate. |
+
+**Where each judging criterion is answered:**
+
+| Criterion | Sections |
+|---|---|
+| Problem Definition & Empathy | 1, 2 |
+| Technical Architecture & Feasibility | 5, 6, 9 |
+| Feature Scope & Prioritization | 4 |
+| Innovation & Differentiation | 6.6–6.8, 7 |
+| Structure & Measurable KPIs | 8 |
+
+---
+
+## 1. Problem & Evidence
+
+### 1.1 Why planning fails today
+
+| Root cause | On the ground |
+|---|---|
+| **Warehouses plan alone** | Spare stock in one warehouse never reaches an outlet that another warehouse cannot serve. |
+| **Plans look backwards** | Orders follow last week's sales, so festival spikes are noticed only after shelves are empty. |
+| **Rules live in people's heads** | Expiry, minimum shelf life on arrival and cold-storage needs are checked by hand, often after dispatch. |
+| **No fair test** | No one can tell whether a plan was good or merely acceptable. |
+
+### 1.2 Size of the problem
+
+| Industry | Evidence | Source |
+|---|---|---|
+| Food / Grocery | **7.36 million tonnes of fruit (6.02–15.05%)** and **11.97 million tonnes of vegetables (4.87–11.61%)** lost each year after harvest | NABCONS 2022, via government reply [1] |
+| Food / Grocery | About **₹29,545 crore (fruits) and ₹27,459 crore (vegetables)** a year | Lok Sabha reply [2] |
+| Food / Grocery | Part of the loss is at the **market/distribution stage**, e.g. 3.46% for guava and 3.25% for tomato | NABCONS, as reported [3] |
+| Pharmacy | Essential-medicine availability of **45.2%** in Punjab public facilities (WHO benchmark: 80%); some categories averaged **186–231 out-of-stock days** | PGIMER study [4] |
+| Pharmacy | **Most public facilities reported stockouts** of diabetes and hypertension medicines (19 districts, 7 states) | ICMR study [5] |
+| Pharmacy | About **₹48,000 crore a year** of pharmaceutical value lost; government stock expiry and overstocking are among the named causes | Industry report [6] |
+| Pharmacy (fixable) | After a supply-chain redesign in Uttar Pradesh, availability at district warehouses rose from about **40% to about 100%** | [7] |
+| Retail (global) | About **8.3%** of items out of stock in physical stores; about **40% of shoppers** facing a stockout postpone or buy elsewhere | [8], [9] |
+
+**Scope note.** SahiSupply affects only the **distribution-stage** share of these losses: allocation, expiry and freshness on arrival. The retail figures are global benchmarks, because we found no reliable India-specific rate.
+
+### 1.3 What is specific to India
+
+- **Fragmented networks.** A long tail of kirana stores, chemists and clinics, plus a few large accounts.
+- **Monsoon closures** that cut off whole regions for days.
+- **Festival spikes** in grocery and food demand.
+- **Uneven cold storage** at clinics and restaurants.
+
+The scenario library (6.4) is built around these four realities.
+
+---
+
+## 2. Users & Validation
+
+### 2.1 Primary persona: the Distribution Planner
+
+> **Ritesh, 31, planner at a regional distributor in Maharashtra** *(illustrative archetype)*. He serves about 200 outlets from 5 warehouses and spends Monday mornings matching stock to orders in Excel. Near-expiry batches reach him over WhatsApp, often after loading. In the monsoon, he re-plans by phone.
+
+**Job to be done:** *"When I plan this week's dispatches, I want a plan I can trust and defend, so outlets don't run out, nothing expired leaves the warehouse, and I can explain every decision to my manager."*
+
+### 2.2 Secondary personas
+
+| Person | Decides | Pain | SahiSupply gives them | Priority |
+|---|---|---|---|---|
+| Supply Chain Manager | Approves plans; reacts to disruptions | Cannot test a crisis in advance | Baseline comparison, scenarios, ₹ insights | P0 |
+| Warehouse Manager | Which batches to pick | Finds near-expiry stock too late | Batch picks in earliest-expiry-first (FEFO) order; expiry-risk list | P0 |
+| Shop / Pharmacy Manager | Is the delivery enough? | Short-dated or short deliveries | Hindi/Marathi WhatsApp dispatch note | P1 |
+
+### 2.3 Hypotheses we test
+
+| ID | Hypothesis | We are wrong if… | Then we… |
+|---|---|---|---|
+| H1 | Planners spend **2+ hours a week** on allocation | Most report < 30 min | Reposition as an expiry-and-disruption checker |
+| H2 | Near-expiry stock is often found **after dispatch** | Most catch it before loading | Lead with stockouts, not freshness |
+| H3 | Trust requires **explaining the plan to a manager** | Users approve plans without opening explanations | Collapse explanations; promote the comparison view |
+| H4 | Cost vs. shortage priority **differs by industry** | All industries rank them the same | Use one global weight |
+| H5 | Outlet staff prefer **regional-language** notes | Most prefer English | Drop the Hindi/Marathi notes |
+
+### 2.4 Validation kit and log
+
+| Method | When | Target | Instrument |
+|---|---|---|---|
+| Interviews | Hours 0–9 | 3 calls: a pharmacist, a food/FMCG distributor, a clinic store-keeper | 5 questions: current process and weekly time; last stockout or expiry and its cause; what makes a plan trustworthy; cost vs. shortages; preferred language |
+| Survey | Hours 0–12 | ≥ 10 responses | 6-item Google Form: role; weekly planning hours; stockout frequency; when expiry is found; tool used today; priority ranking |
+| Usability test | Hours 14–18 | 2–3 participants | Tasks T1–T3 (Section 8.4) and the SUS questionnaire |
+
+| Source | n | Key finding | Hypothesis | Product change |
+|---|---|---|---|---|
+| Interviews | *[fill]* | *[fill]* | | |
+| Survey | *[fill]* | *[fill]* | | |
+| Usability test | *[fill]* | *[fill]* | | |
+
+**Integrity rule.** Only collected results go in this table. If no practitioner is reachable, the pitch says so, and the usability test is labelled "peer test".
+
+---
+
+## 3. One Engine, Three Industries
+
+Each industry is a **YAML file** that selects rules from a fixed library of **typed templates**. No free-form code runs from configs, so a new industry means a new file, not new code.
+
+| Template | Effect | Parameters |
+|---|---|---|
+| `min_life_on_arrival` | **Blocks** a batch→outlet pair if the shelf life left on arrival (expiry − today − lead time) is below a threshold | days, or % of total shelf life |
+| `storage_match` | **Blocks** chilled or 2–8 °C products from outlets without matching storage | storage classes |
+| `shortage_weight` | **Raises the penalty** on shortages of a product class | weight per class |
+| `fefo` | Prefers earliest-expiry batches (bounded tie-break) | on/off |
+| `min_fill_floor` *(P1)* | **Equity guardrail**: every outlet gets at least a minimum share of its need, when supply allows | floor %, class |
+
+| | A. Grocery | B. Food Distribution | C. Pharmacy |
+|---|---|---|---|
+| Delivers to | Kirana stores, supermarkets | Distributors, restaurants | Pharmacies, clinics, hospitals |
+| P0 rules | **G1** `fefo` + `min_life_on_arrival` ≥ 3 days | **F1** `min_life_on_arrival` ≥ 40% of shelf life | **C1** `min_life_on_arrival` ≥ 90 days; **C2** `shortage_weight` critical = 10 |
+| P1 rules | — | **F2** `storage_match` (chilled) | **C3** `storage_match` (2–8 °C); **C4** `min_fill_floor` 80% |
+| Service level | 90% (z = 1.28) | 90% (z = 1.28) | 98% critical (z = 2.05); 95% standard (z = 1.65) |
+| Headline KPI | Fill rate; expiry-risk units | Fill rate; freshness on arrival | Critical-medicine fill rate; 0 blocked units shipped |
+
+```yaml
+industry: pharmacy
+planning: { review_period_days: 7 }
+rules:
+  - { id: C1, template: min_life_on_arrival, params: { min_days: 90 }, status: active }
+  - { id: C2, template: shortage_weight, params: { weights: { critical: 10, standard: 1 } }, status: active }
+  - { id: C3, template: storage_match, params: { classes: ["2-8C"] }, status: planned }
+```
+
+Thresholds are configurable settings, not regulatory requirements. We claim no regulatory compliance.
+
+---
+
+## 4. Scope & Priorities
+
+| Tier | Meaning |
+|---|---|
+| **P0 — core demo** | Without it there is no demo. Each item has an automated or scripted test. Budgeted to fit hours 0–14 (Section 9.1). |
+| **P1 — ranked stretch** | Started only after the hour-14 gate, strictly in rank order. |
+| **P2 — post-hackathon** | Section 10. |
+
+### 4.1 P0 (core demo)
+
+| ID | Feature | Acceptance test | Effort |
+|---|---|---|---|
+| P0-01 | Config-driven industry switch | Products, outlets, rules and KPIs change; config schema test passes for all 3 industries | 1 h |
+| P0-02 | Documented synthetic data generator (5.4) | Same seed → byte-identical data (SHA-256); "Synthetic data" label on every screen | 4 h |
+| P0-03 | Forecast with rolling backtest | MAE, RMSE and WAPE shown for seasonal-naive, moving-average and ML models; best chosen per industry | 4 h |
+| P0-04 | Net requirement and risk flags | Matches hand calculation on 3 fixtures; stockout-risk and expiry-risk flags | 2 h |
+| P0-05 | Batch-level optimizer with G1, F1, C1, C2 | Solves S0–S3; turning off each rule changes the plan in its fixture | 6 h |
+| P0-06 | Independent checker and input validation | Recomputes eligibility from raw data; 0 violations over 100 random seeds; bad input → typed error | 4 h |
+| P0-07 | Greedy baseline + comparison + scenarios S0–S3 (one click each) | Same data fingerprint for both plans; Δ fill, cost, shortage, expiry risk and ₹ impact shown | 4 h |
+| P0-08 | Why / why-not explanations per line and per shortage | Every line shows need components, the chosen source and the reason each alternative was not used | 4 h |
+| P0-09 | **"Value of one more unit" insights** (6.6) | Top 5 binding constraints shown with ₹ per extra unit; each value checked by +1-unit re-solve within ±5% | 2 h |
+| P0-10 | Planner workspace UI | Picker → Run → plan table, KPI cards, comparison, explanation drawer, insights panel; flow ≤ 3 min | 14 h |
+
+### 4.2 P1 (ranked stretch, from hour 14)
+
+We **expect to finish ranks 1–4** (5.5 h). Ranks 5–6 are true stretch.
+
+| Rank | ID | Feature | Effort | Why | Test |
+|---|---|---|---|---|---|
+| 1 | P1-01 | **Equity guardrail** (C4, 6.7) | 1 h | Prevents the most serious harm: a remote clinic left without critical medicine | No outlet below the floor while supply allows; cost of fairness shown in ₹ |
+| 2 | P1-02 | **Disruption-regret score** (6.8) | 1.5 h | Shows where the network is fragile *before* a disruption | Regret per scenario and region shown |
+| 3 | P1-03 | Map (Leaflet + OpenStreetMap) | 2 h | Makes re-routing visible in the demo | Pins and lines match the plan; list-view fallback |
+| 4 | P1-04 | Hindi/Marathi WhatsApp dispatch note | 1 h | Reaches outlet staff where they already work (H5) | Checked by a native speaker; totals match the plan |
+| 5 | P1-05 | Rules F2, C3 + scenario S4 (cold-room failure) | 1.5 h | Completes the cold-chain story | Rule tests pass → status "active" |
+| 6 | P1-06 | Live "add dairy" config | 0.5 h | Proves the one-engine claim on stage | A new YAML file runs end to end, no code |
+
+### 4.3 Cut ladder (checkpoints at hours 9 and 12)
+
+Items are dropped in this order:
+
+1. All P1 items.
+2. Food Distribution reduced to rule F1 and scenario S0.
+3. ML forecaster replaced by the best baseline forecaster (the backtest is still shown).
+4. Insights limited to stock constraints only.
+
+**Never cut:** batch-level optimizer, checker, baseline comparison, explanations, Grocery and Pharmacy.
+
+---
+
+## 5. Architecture, Deployment, Security & Scale
+
+### 5.1 Stack
+
+| Layer | Choice | Why |
+|---|---|---|
+| Frontend | React, TypeScript, Vite, Tailwind, Recharts | Fast to build; typed API client |
+| API | FastAPI + Pydantic | Schemas double as the API contract (OpenAPI) |
+| Forecast | pandas, scikit-learn `HistGradientBoostingRegressor` | One global model per industry trains in seconds |
+| Optimizer | OR-Tools `pywraplp` + SCIP | Free MILP solver with time limits; LP duals for insights |
+| Storage | SQLite + versioned Parquet seed snapshot | Single file; the data is tabular |
+| Tests | pytest + Hypothesis, Vitest | Property tests on checker invariants |
+
+### 5.2 Components
+
+```mermaid
+flowchart LR
+  UI["React planner workspace"] -->|REST / JSON| API["FastAPI + Pydantic"]
+  API --> CFG["Industry config (YAML)"]
+  API --> DB[("SQLite + seed snapshot")]
+  API --> FC["Forecast + backtest"]
+  FC --> NEED["Net requirement + safety stock"]
+  NEED --> ELIG["Eligibility builder e(b,d)"]
+  ELIG --> OPT["Batch-level MILP"]
+  ELIG --> BASE["Greedy baseline"]
+  OPT --> CHK["Independent checker"]
+  BASE --> CHK
+  OPT --> INS["Shadow-price insights"]
+  CHK --> KPI["KPIs + explanations"]
+  INS --> KPI
+  KPI --> API
+```
+
+**Run flow:**
+1. Validate the request.
+2. Load config and data, and compute the **data fingerprint** (SHA-256).
+3. Forecast demand.
+4. Compute net need.
+5. Build the eligibility matrix e(b,d).
+6. Solve the MILP (10 s limit) and the baseline on identical inputs.
+7. Run the checker on both plans.
+8. Compute insights, KPIs and explanations.
+9. Store the plan with its fingerprint.
+
+A scenario change re-runs from step 3.
+
+### 5.3 Engineering for real use
+
+| Area | Hackathon (built) | Pilot (designed) |
+|---|---|---|
+| **Deployment** | One multi-stage Docker image (frontend build + API); `docker compose up`; demo host plus an identical offline laptop copy | `staging` and `pilot` environments in an India-region cloud or on the distributor's own server |
+| **CI/CD** | GitHub Actions on every push: ruff, mypy, eslint, tsc, pytest + Hypothesis, Vitest, Docker build, `pip-audit`, `npm audit`. Merges to `main` deploy an image tagged with the commit SHA | Coverage ≥ 80% on planner and checker; manual gate before pilot; one-command rollback |
+| **Security** | Synthetic data only; Pydantic size limits; configs schema-checked (no `eval`); CORS restricted; rate limiting; no stack traces in errors | Single sign-on; roles (Planner / Approver / Viewer); approval audit log; TLS and encryption at rest; pseudonymized outlet IDs; designed with India's DPDP Act 2023 in mind (no compliance claimed) |
+| **Observability** | JSON logs keyed by `plan_id` with stage timings, solver status and MIP gap; `/api/health`; `/api/metrics` (solve time, checker violations, fallbacks) | Alerts on any checker violation, solves over the time limit, or forecast WAPE drift > 20% |
+| **Fallbacks** | Database down → seed snapshot; solver time limit → best plan found with its gap; solver failure → labelled baseline; map down → list view | Same |
+
+### 5.4 Synthetic data (per industry, seed 42)
+
+| Entity | Count | Notes |
+|---|---|---|
+| Warehouses | 5 | Real city coordinates; outbound capacity; cold storage flag |
+| Outlets | 12 | 3 regions (for monsoon scenarios); receiving and cold capacity (0 at some) |
+| Products | 15 | Volume, storage class, shelf life, price; Pharmacy has 5 critical and 4 at 2–8 °C |
+| Batches | ~135 | Each product at 3 of 5 warehouses, with 2–4 batches each and staggered expiry |
+| Routes | 60 | Distance = haversine × 1.3; lead time = 1 + ⌊km / 350⌋ days; capacity; open flag |
+| Sales history | 32,400 rows | 12 outlets × 15 products × 180 days |
+
+**Demand model** (published with the code):
+
+> base × weekday factor × trend × promotion uplift × festival uplift, with negative-binomial noise
+
+Because true expected demand is known, we report the **noise floor**: the best error any model could achieve.
+
+A **contested-supply pattern** is included deliberately and disclosed: some remote outlets share their only source with nearer urban outlets. This is exactly where one-warehouse-at-a-time planning fails.
+
+### 5.5 Scalability path
+
+| Scale | Size | Approach | Evidence |
+|---|---|---|---|
+| Demo | 5 × 12 × 15 (≤ 1,620 integer variables) | Single MILP | p50/p95 solve time measured |
+| Stress | 10 × 48 × 30 (~13,000 variables) | Single MILP, 10 s limit, best plan + gap | **Measured at hour 12–14** |
+| Regional | 20 × 2,000 × 500 | Decompose by product group (groups share only capacity, which is pre-allocated), solve groups in parallel; or LP relaxation + rounding + checker repair | Design |
+| Multi-company | Many tenants | Stateless API containers; solve jobs on a queue; Postgres with a tenant ID on every row; nightly forecasts | Design |
+
+---
+
+## 6. Planning Method
+
+### 6.1 Forecast and need
+
+- **Models:** seasonal naive; 28-day moving average; global gradient boosting with lags (7/14/28), weekday, promotion, festival and IDs.
+- **Backtest:** rolling origin, **4 folds × 14 days** (days 125–180).
+- **Selection:** lowest **WAPE**.
+- **σ:** standard deviation of daily backtest errors, floored at 1 unit.
+
+With review period R = 7 days and shortest lead time L_d:
+
+> **q(d,p) = max(0, Σ forecast over R + L_d days + z·σ·√(R + L_d) − U(d,p))**
+
+**U(d,p)** counts only on-hand units that pass the rules and **do not expire within R + L_d days**. In-transit stock is assumed to be zero; this is a stated limitation.
+
+### 6.2 Optimization model (one cycle)
+
+**Eligibility:** e(b,d) = 1 only if the warehouse and route are open, storage matches, and **shelf life on arrival** meets the rule. Variables exist only for eligible pairs.
+
+**Decision variables:**
+- x(b,d) ∈ ℤ≥0 — units of batch *b* sent to outlet *d*
+- u(d,p) ≥ 0 — shortage
+
+> **min Σ c·x + Σ π·u + ε Σ r_b·x**
+
+| Term | Meaning |
+|---|---|
+| c | Unit delivery cost |
+| π | Shortage penalty = 10 × (maximum unit cost) × class weight, so any shortage costs more than any delivery |
+| ε·r_b | FEFO term. ε·max(r) ≤ 1% of the smallest unit cost, so FEFO only breaks near-ties |
+
+**Constraints:**
+1. **Batch stock:** Σ_d x ≤ I_b
+2. **Need balance:** Σ x + u = q, so nothing is sent beyond need
+3. **Warehouse outbound capacity:** Σ v·x ≤ OutCap_w
+4. **Outlet receiving capacity:** Σ v·x ≤ InCap_d, with a separate cold-capacity limit
+5. **Route capacity:** Σ v·x ≤ RouteCap
+6. **Rule blocks:** ineligible pairs have no variable
+
+**Size:** ≤ 1,620 integer variables + 180 shortage variables. Shortage variables guarantee a solution for any valid input; invalid input is rejected before solving.
+
+### 6.3 Greedy baseline (the spreadsheet planner)
+
+Run on **identical data and rules**:
+1. Sort (outlet, product) pairs by need, largest first.
+2. For each pair, take eligible batches cheapest first, then earliest expiry.
+3. Allocate until the need is met, stock runs out, or a capacity limit is reached.
+
+Any gap between the two plans is therefore due to **network-wide allocation**. A separate **rules-off run** shows what the rules themselves prevent.
+
+### 6.4 Scenarios
+
+| ID | Scenario | Change |
+|---|---|---|
+| S0 | Normal week | none |
+| S1 | Festival spike | +40% demand for 5 products at 4 outlets |
+| S2 | Warehouse outage | Largest warehouse closed |
+| S3 | Monsoon closure | Routes from 2 warehouses into one region closed |
+| S4 (P1) | Cold-room failure | One clinic's cold capacity set to 0 |
+
+### 6.5 Checker and explanations
+
+**Checker.** Written by a different team member (role D) from the optimizer (role B), and sharing no eligibility code. It recomputes shelf life from raw dates and verifies:
+- constraints 1–5;
+- every active rule;
+- that on-screen totals match recomputed totals;
+- that both plans have the same fingerprint.
+
+A failed plan is never shown as valid.
+
+**Explanations.** For each delivery and each shortage, every other warehouse holding the product gets exactly one reason it was not used:
+- **blocked** by a rule, with the value (e.g. "41 days on arrival < 90");
+- **closed**;
+- **capacity-bound**, naming the constraint;
+- **allocated elsewhere**, naming the outlets and the ₹ difference;
+- **costlier by ₹Δ per unit**.
+
+The text comes from templates filled with plan numbers. No language model is used.
+
+### 6.6 "Value of one more unit" insights (P0-09)
+
+After solving, integer shipments are fixed and the LP is re-solved to read **shadow prices** on binding constraints:
+
+| Binding constraint | Shown as |
+|---|---|
+| Batch stock at warehouse *w* | "Each extra unit of insulin at W2 avoids about ₹X of shortage" → **procurement or rebalancing signal** |
+| Route capacity | "One more vehicle on W1 → Region 3 is worth ₹Y this week" |
+| Outlet cold capacity | "A fridge at Clinic D9 is worth ₹Z per week" |
+
+The top 5 values are **checked by re-solving with +1 unit**; any value outside ±5% of the re-solve is hidden. All values are labelled "valid for small changes".
+
+### 6.7 Equity guardrail (P1-01)
+
+> u(d,p) ≤ (1 − f_min)·q(d,p) + s(d,p), with slack s ≥ 0 penalized at 100π
+
+- f_min = 80% for critical medicines.
+- The UI shows the **cost of fairness**: plan cost with the guardrail on, minus plan cost with it off.
+
+### 6.8 Disruption-regret score (P1-02)
+
+For each scenario *k* in S1–S3:
+
+> **Regret(k) = fill rate of the re-optimized plan − fill rate of the S0 plan applied unchanged to scenario k**
+
+Regret is broken down by region and warehouse, showing where to pre-position stock before a monsoon.
+
+---
+
+## 7. Differentiation & Innovation
+
+### 7.1 Capability benchmark
+
+Cells describe each category's typical setup. Enterprise suites can often be configured to do more, at higher cost and with more implementation effort.
+
+| Capability | Spreadsheet / ERP min-max | Inventory / WMS app | Enterprise planning suite (e.g. SAP IBP, Blue Yonder, Kinaxis, o9) | **SahiSupply** |
+|---|---|---|---|---|
+| Network-wide allocation | ✗ | ✗ | ✓ | ✓ |
+| Batch expiry used *inside* allocation | Manual | Tracks, doesn't allocate | Often configurable | ✓ |
+| Shelf life checked on arrival | ✗ | ✗ | Varies | ✓ |
+| "Why not that warehouse?" for every line | ✗ | ✗ | Varies | ✓ |
+| Independent verification of each plan | ✗ | ✗ | Varies | ✓ |
+| Fair, fingerprinted baseline comparison | ✗ | ✗ | Rare | ✓ |
+| ₹ value of one more unit / capacity / fridge | ✗ | ✗ | Specialist users | ✓ (plain language) |
+| India scenarios (festival, monsoon, cold-room) | ✗ | ✗ | Generic tools | ✓ |
+| New industry without code | n/a | n/a | Implementation project | ✓ (YAML) |
+| Setup effort | Low | Low–medium | High | Low |
+
+We do not claim to outperform commercial software. The claim is narrower: **a decision engine light enough for a regional distributor, and transparent enough for a planner to defend.**
+
+### 7.2 What is new
+
+**Algorithmic:**
+1. **Lead-time-adjusted, batch-level eligibility inside the MILP.** Freshness is checked on arrival, before allocation, so a plan can never become invalid when actual batches are assigned.
+2. **Bounded FEFO.** By construction, earliest-expiry preference cannot override any per-unit cost difference larger than 1% of the smallest unit cost.
+3. **Counterfactual explanations** derived from the solved model, for every line and every shortage.
+4. **Verified shadow-price insights.** The plan becomes a ranked list of where stock, capacity or refrigeration is worth the most, in ₹.
+5. **Regret score and priced equity guardrail** *(P1)*: fragility and fairness made measurable.
+
+**Product:**
+
+6. **Fair, disclosed evaluation:** fingerprinted data, a fully specified baseline, a disclosed contested-supply pattern, and a rules-off run.
+7. **Honest forecasting:** model error shown next to the noise floor.
+8. **India-first design:** monsoon, festival and cold-room scenarios; Hindi/Marathi WhatsApp notes.
+9. **One engine:** typed rule templates; a new industry is a new file.
+
+**Hard to copy quickly:** the trust layer (independent checker, property tests, fingerprints) and per-line counterfactual explanations both require deliberate model design. They cannot be bolted onto an existing tool.
+
+---
+
+## 8. Success Metrics
+
+All values are **targets**. Actual numbers will be reported even if missed. Synthetic results do not prove real-world impact.
+
+### 8.1 Outcomes (optimizer vs. baseline, same data)
+
+| KPI | Definition | Target |
+|---|---|---|
+| Fill rate | Units delivered ÷ units needed | ≥ baseline + 5 pp in ≥ 2 of S1–S3; ≥ baseline in S0 |
+| Critical-medicine fill rate | Same, critical products only | ≥ 98% whenever eligible critical supply ≥ critical need (S0–S2) |
+| Cost per delivered unit | Delivery cost ÷ units delivered | ≤ baseline + 5% |
+| Expiry-risk units | Units left that expire before the next cycle | ≥ 10% below baseline in S0 |
+| Freshness on arrival (Food) | Average % of shelf life left on arrival | ≥ baseline |
+| Value of rules | Blocked units shipped, rules-off vs. rules-on | Rules-on = 0; rules-off count reported |
+
+### 8.2 Business impact (illustrative, synthetic prices)
+
+| Item | Formula |
+|---|---|
+| Lost sales avoided | Δ units short × price × lost-sale share (default 0.40 from [9], treated as an upper-bound proxy) |
+| Waste avoided | Δ expiry-risk units × unit cost |
+| Net weekly benefit | Lost sales avoided + waste avoided − Δ delivery cost |
+| Critical-medicine access | Extra critical units delivered, reported in **units, not ₹** |
+
+**Target:** net weekly benefit > 0 in S0 and in ≥ 2 of S1–S3. The figures are never extrapolated to real companies.
+
+### 8.3 Forecast
+
+| KPI | Target |
+|---|---|
+| WAPE vs. seasonal naive | ≥ 10% lower, per industry |
+| Gap to noise floor | Reported |
+
+### 8.4 Users (usability test, Section 2.4)
+
+| KPI | Measure | Target |
+|---|---|---|
+| T1 — run the weekly plan | Time, unaided | ≤ 60 s |
+| T2 — explain why Clinic D7 is short | Correct reason, ≤ 2 clicks | ≥ 2 of 3 participants |
+| T3 — re-plan for a monsoon closure | Correctly names the changed lines | ≤ 2 min |
+| Task success (T1–T3) | Completed correctly | ≥ 80% |
+| SUS score | 10-item questionnaire | ≥ 70 (the commonly cited average is 68) |
+| Trust | "Would you approve without re-checking in Excel?" (1–5) | Median ≥ 4 |
+
+### 8.5 Correctness gate (pass/fail before the demo)
+
+| Check | Pass condition |
+|---|---|
+| Stock, need, capacity, eligibility | 0 violations over 100 random seeds and all scenarios |
+| Totals | Screen totals equal recomputed totals |
+| Fairness | Identical fingerprints for both plans |
+| Determinism | Same seed → same plan |
+| Insights | Top-5 shadow prices within ±5% of +1-unit re-solves |
+| P0 tests | 100% pass |
+
+### 8.6 Performance
+
+| KPI | Target |
+|---|---|
+| Demo-size solve | p50 < 2 s, p95 < 5 s over 20 runs |
+| Stress test (10 × 48 × 30) | Within the 10 s limit; MIP gap ≤ 2% |
+| Full demo | ≤ 3 minutes |
+
+---
+
+## 9. Execution Plan
+
+### 9.1 Team and P0 hours budget (hours 0–14)
+
+| Role | P0 work (hours) | Total |
+|---|---|---|
+| **A — Data & Forecast** | Config switch 1 · generator 4 · forecast + backtest 4 · net need 2 · baseline 2 · ₹ impact 1 | **14** |
+| **B — Optimization** | MILP 6 · scenarios 2 · shadow-price insights 2 · explanations 4 | **14** |
+| **C — Frontend** | Workspace UI 10 · real-API integration 2 · polish 2 | **14** |
+| **D — QA, Infra & Validation** | Repo, CI, Docker, OpenAPI mocks 2 · **independent checker** 4 · property tests + fixtures 3 · interviews + survey 3 · end-to-end tests + deploy 2 | **14** |
+
+**Capacity:** 56 person-hours for 56 hours of P0 work. Because this leaves no slack before hour 14, hours 14–20 serve as both the P1 window and the overflow buffer. The cut ladder (4.3) is applied at hours 9 and 12. With 3 people, D's work is split between B and C, and P1 is dropped.
+
+### 9.2 Timeline
+
+| Hours | A | B | C | D | Checkpoint |
+|---|---|---|---|---|---|
+| 0–1 | Schema + config loader | Toy MILP spike | UI skeleton | Repo, CI, Docker, OpenAPI mocks; send survey | Green CI; contract committed |
+| 1–5 | Generator + 3 configs | Batch-level MILP | Picker, plan table, KPI cards (mocks) | Checker; first interview | Same seed → same data |
+| 5–9 | Forecast + backtest | MILP finish; S0–S3; insights start | Comparison + explanation drawer (mocks) | Property tests; fixtures; interviews 2–3 | **Hour 9: cut ladder if behind** |
+| 9–12 | Net need; baseline | Insights; explanations | Real API; insights panel | End-to-end tests; deploy to demo host; close survey | One click → checked plan |
+| 12–14 | Baseline finish; ₹ impact | Explanations finish | Polish | Full regression; stress-test run | **Hour 14: P0 gate green** |
+| 14–18 | P1-06 dairy | P1-01 equity → P1-02 regret | P1-03 map → P1-04 WhatsApp note | **Usability test**; validation log | P1 in rank order |
+| 18–20 | Buffer / rest | P1-05 if on track | Buffer | Backup demo video | — |
+| 20–22 | — | Code freeze | — | Final tests on the deployed build | **No features after hour 20** |
+| 22–24 | Rehearse ×3 | | | Submit | Demo ≤ 3 min |
+
+### 9.3 Risks
+
+| Risk | Mitigation |
+|---|---|
+| Little gain over the baseline | Contested-supply pattern and S1–S3; report the S0 result honestly |
+| P0 overruns | Cut ladder at hours 9 and 12; hours 14–20 are a buffer |
+| Solver slow | Eligibility pre-filter; 10 s limit returns the best plan found with its gap |
+| Misleading shadow prices | +1-unit verification; values outside ±5% are hidden |
+| Data judged "fake" | Published generator; labels everywhere; noise floor shown |
+| No practitioners reachable | Peer usability test, labelled as such; empty log disclosed |
+| Demo host or internet down | Same Docker image on an offline laptop; backup video |
+
+**Known limitations:**
+- Single planning period.
+- Straight-line distances with a circuity factor.
+- No in-transit stock.
+- No vehicle routing.
+- Synthetic demand.
+- No live integrations.
+
+**Definition of done:** in Grocery and Pharmacy (and Food unless cut), a judge can run a checked plan, compare it with the baseline, open a why/why-not explanation, read the ₹ insights, and run a disruption scenario. All P0 tests pass.
+
+---
+
+## 10. Demo Script & Beyond the Hackathon
+
+### 10.1 Three-minute demo
+
+| Time | Action | The judge sees |
+|---|---|---|
+| 0:00 | One statistic + one validation finding; open Pharmacy | Synthetic-data label; batches with expiry flags |
+| 0:20 | Run S0 | Plan, KPIs, checker showing 0 violations, baseline comparison with ₹ impact |
+| 0:45 | Click a short insulin line | Why / why-not for every source |
+| 1:10 | Open insights | "A fridge at Clinic D9 is worth ₹Z/week"; "+1 insulin at W2 avoids ₹X" |
+| 1:35 | Run S3 (monsoon) | The baseline leaves the remote clinic short; the optimizer re-sources |
+| 2:05 | Equity guardrail on *(P1)* | All clinics ≥ 80%; cost of fairness in ₹ |
+| 2:25 | Toggle C1 off, then on | Rules-off ships N short-dated units; rules-on ships 0 |
+| 2:45 | Switch to Grocery | Same engine, different rules |
+
+If a P1 step isn't built, it is skipped and the demo finishes early.
+
+### 10.2 After the hackathon
+
+| Phase | Weeks | What happens | Exit criterion |
+|---|---|---|---|
+| Shadow mode | 1–4 | One distributor exports anonymized weekly CSVs; SahiSupply plans **alongside** the planner | 4 weekly plans, 0 violations on real data |
+| Assisted | 5–8 | Planner edits SahiSupply's plan; every override is logged with a reason | Override rate falling week over week |
+| Measured | 9–12 | Compare against the distributor's prior 12 weeks: planner hours, fill rate, critical stockouts, expired write-offs, cost per unit, SUS | Written report, whichever way it comes out |
+
+**Feedback loop:** recurring override reasons become new rule templates or forecast features. Forecast drift and SUS are reviewed monthly.
+
+**Roadmap:**
+- **0–3 months:** CSV import wizard, Postgres, login and approvals.
+- **3–6 months:** ERP connectors, road distances, multi-period planning with in-transit stock.
+- **6–12 months:** vehicle routing, transfers between outlets, robust planning.
+
+**Business model hypothesis:** a per-warehouse monthly subscription, priced between free spreadsheets and enterprise suites. Pricing will be validated during the pilot.
+
+---
+
+## References
+
+1. Rajya Sabha, Unstarred Q. 572 (7 Feb 2025), citing the NABCONS 2022 post-harvest loss study. https://rsdebate.nic.in/bitstream/123456789/758453/1/PQ_267_07022025_U572_p312_p312.pdf
+2. Lok Sabha, Unstarred Q. 1773 (5 Dec 2024), "Post-Harvest Losses". https://eparlib.sansad.in/bitstream/123456789/2984698/1/AU1773_tyKJYF.pdf
+3. FreshPlaza, "India reports high guava and tomato losses". https://www.freshplaza.com/asia/article/9756104/india-reports-high-guava-and-tomato-losses/
+4. Medical Dialogues, "Punjab Govt hospitals do not have 50 pc medicines: PGI Study". https://medicaldialogues.in/punjab-govt-hospitals-do-not-have-50-pc-medicines-pgi-study
+5. The Week / PTI (3 Jun 2025), ICMR study on diabetes and hypertension medicine shortages. https://www.theweek.in/wire-updates/national/2025/06/03/des106-health-icmr-study.html
+6. BioSpectrum India (22 Jul 2026), Primus Partners report on ~₹48,000 crore pharmaceutical value leakage. https://www.biospectrumindia.com/public/news/16/28176/primus-partners-report-highlights-nearly-rs-48000-cr-annual-pharmaceutical-value-leakage.html
+7. Frontiers in Public Health (2025), redesign of the public medicines supply chain in Uttar Pradesh. https://www.frontiersin.org/journals/public-health/articles/10.3389/fpubh.2025.1588227
+8. Supermarket News, GMA study on online out-of-stocks. https://www.supermarketnews.com/grocery-trends-data/reducing-online-out-of-stocks-critical-for-retailers-says-gma-study
+9. Supermarket News, "New GMA study shows rising incidence of out-of-stocks". https://www.supermarketnews.com/mergers-acquisitions/new-gma-study-shows-rising-incidence-of-out-of-stocks
+  </script>
+
+  <!-- Load JS Engine & App Controller -->
+  <script src="evaluator.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
